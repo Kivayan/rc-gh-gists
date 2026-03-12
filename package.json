@@ -1,0 +1,67 @@
+{
+  "name": "raycast-github-gist-explorer",
+  "title": "GitHub Gist Explorer",
+  "version": "0.1.0",
+  "description": "Search, browse, create, and locally index your GitHub gists in Raycast.",
+  "icon": "icon.png",
+  "categories": [
+    "Developer Tools"
+  ],
+  "main": "src/search-gists.tsx",
+  "author": "kivayan",
+  "license": "MIT",
+  "scripts": {
+    "build": "ray build",
+    "dev": "ray develop",
+    "lint": "ray lint",
+    "test": "tsx --test tests/*.test.ts"
+  },
+  "dependencies": {
+    "@raycast/api": "^1.93.0",
+    "@raycast/utils": "^1.17.0",
+    "minisearch": "^7.1.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3"
+  },
+  "commands": [
+    {
+      "name": "search-gists",
+      "title": "Search Gists",
+      "description": "Search your GitHub gists from a local index",
+      "mode": "view"
+    },
+    {
+      "name": "create-gist",
+      "title": "Create Gist",
+      "description": "Create a GitHub gist",
+      "mode": "view"
+    },
+    {
+      "name": "refresh-gists",
+      "title": "Refresh Gists",
+      "description": "Refresh and rebuild the local gist index",
+      "mode": "no-view"
+    }
+  ],
+  "preferences": [
+    {
+      "name": "githubToken",
+      "type": "password",
+      "required": true,
+      "title": "GitHub Personal Access Token",
+      "description": "A GitHub PAT with gist scope"
+    },
+    {
+      "name": "fetchFullTruncatedContent",
+      "type": "checkbox",
+      "required": false,
+      "default": true,
+      "title": "Fetch Full Truncated File Content",
+      "label": "Fetch full raw content for truncated gist files",
+      "description": "When enabled, the indexer fetches full raw content for truncated gist files"
+    }
+  ]
+}
