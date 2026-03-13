@@ -1,15 +1,6 @@
-export class MissingTokenError extends Error {
-  constructor() {
-    super(
-      "Missing GitHub token. Add a Personal Access Token with gist scope in Raycast preferences.",
-    );
-    this.name = "MissingTokenError";
-  }
-}
-
 export class AuthenticationError extends Error {
   constructor(
-    message = "GitHub authentication failed. Check your token and gist scope.",
+    message = "GitHub authentication failed. Sign out and reconnect your GitHub account.",
   ) {
     super(message);
     this.name = "AuthenticationError";

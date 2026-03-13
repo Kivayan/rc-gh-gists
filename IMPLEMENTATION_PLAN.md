@@ -26,9 +26,9 @@ This file tracks the implementation status for the MVP.
 - [x] Project contains valid `package.json`, `tsconfig.json`, and Raycast command metadata
 - [x] Source tree includes 3 commands and shared library modules
 
-### Preferences
+### Preferences And Auth
 
-- [x] `githubToken` preference exists and is readable
+- [x] GitHub auth uses Raycast OAuth with browser sign-in
 - [x] `fetchFullTruncatedContent` preference exists and defaults to enabled
 
 ### GitHub Client
@@ -58,7 +58,7 @@ This file tracks the implementation status for the MVP.
 
 ### Reliability
 
-- [x] Missing token shows a clear setup state
+- [x] Browser-based GitHub sign-in gates commands cleanly
 - [x] Invalid token shows a clear auth error
 - [x] Empty cache and empty-account states do not crash
 

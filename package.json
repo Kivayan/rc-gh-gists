@@ -4,8 +4,19 @@
   "version": "0.1.0",
   "description": "Search, browse, create, and locally index your GitHub gists in Raycast.",
   "icon": "icon.png",
+  "platforms": [
+    "macOS",
+    "Windows"
+  ],
   "categories": [
     "Developer Tools"
+  ],
+  "keywords": [
+    "github",
+    "gist",
+    "search",
+    "snippets",
+    "developer"
   ],
   "main": "src/search-gists.tsx",
   "author": "kivayan",
@@ -14,11 +25,12 @@
     "build": "ray build",
     "dev": "ray develop",
     "lint": "ray lint",
+    "publish": "npx @raycast/api@latest publish",
     "test": "tsx --test tests/*.test.ts"
   },
   "dependencies": {
-    "@raycast/api": "^1.93.0",
-    "@raycast/utils": "^1.17.0",
+    "@raycast/api": "^1.104.9",
+    "@raycast/utils": "^2.2.3",
     "minisearch": "^7.1.2"
   },
   "devDependencies": {
@@ -30,30 +42,41 @@
     {
       "name": "search-gists",
       "title": "Search Gists",
+      "subtitle": "GitHub",
       "description": "Search your GitHub gists from a local index",
+      "keywords": [
+        "github",
+        "code",
+        "snippet"
+      ],
       "mode": "view"
     },
     {
       "name": "create-gist",
       "title": "Create Gist",
+      "subtitle": "GitHub",
       "description": "Create a GitHub gist",
+      "keywords": [
+        "github",
+        "new",
+        "snippet"
+      ],
       "mode": "view"
     },
     {
       "name": "refresh-gists",
       "title": "Refresh Gists",
+      "subtitle": "GitHub",
       "description": "Refresh and rebuild the local gist index",
+      "keywords": [
+        "github",
+        "sync",
+        "reindex"
+      ],
       "mode": "no-view"
     }
   ],
   "preferences": [
-    {
-      "name": "githubToken",
-      "type": "password",
-      "required": true,
-      "title": "GitHub Personal Access Token",
-      "description": "A GitHub PAT with gist scope"
-    },
     {
       "name": "fetchFullTruncatedContent",
       "type": "checkbox",

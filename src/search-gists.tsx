@@ -1,16 +1,21 @@
 import {
   Action,
   ActionPanel,
+  Alert,
   Clipboard,
   Detail,
   Icon,
   LaunchProps,
   List,
   Toast,
+  confirmAlert,
+  popToRoot,
   showToast,
 } from "@raycast/api";
 import { useEffect, useMemo, useState } from "react";
-import { getRequiredToken } from "./lib/preferences";
+import { withGitHubOAuth } from "./lib/auth";
+import { removeGistFromCachePayload } from "./lib/cache-payload";
+import { deleteGistFromCache } from "./lib/cache-utils";
 import {
   createSearchIndex,
   searchDocuments,
@@ -80,7 +85,12 @@ async function pasteGistContent(gist: GistRecord) {
   });
 }
 
-function GistPreview({ gist }: { gist: GistRecord }) {
+type GistPreviewProps = {
+  gist: GistRecord;
+  onDelete: (gist: GistRecord) => Promise<void>;
+};
+
+function GistPreview({ gist, onDelete }: GistPreviewProps) {
   return (
     <Detail
       navigationTitle=""
@@ -130,25 +140,32 @@ function GistPreview({ gist }: { gist: GistRecord }) {
             title="Copy Gist URL"
             onAction={() => Clipboard.copy(gist.htmlUrl)}
           />
+          <Action
+            title="Delete Gist"
+            icon={Icon.Trash}
+            style={Action.Style.Destructive}
+            onAction={() => onDelete(gist)}
+            shortcut={{ modifiers: ["ctrl"], key: "x" }}
+          />
         </ActionPanel>
       }
     />
   );
 }
 
-export default function SearchGists(_props: LaunchProps) {
+function SearchGists(_props: LaunchProps) {
   const [query, setQuery] = useState("");
   const [cache, setCache] = useState<CachePayload | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [deletingGistId, setDeletingGistId] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
 
     async function bootstrap() {
       try {
-        getRequiredToken();
         const loaded = await loadCache();
         if (!isMounted) {
           return;
@@ -229,6 +246,44 @@ export default function SearchGists(_props: LaunchProps) {
     await showToast({ style: Toast.Style.Success, title: "Copied gist URL" });
   }
 
+  async function handleDeleteGist(gist: GistRecord) {
+    const confirmed = await confirmAlert({
+      title: "Delete gist?",
+      message: `This permanently deletes ${formatGistTitle(gist)} from GitHub.`,
+      primaryAction: {
+        title: "Delete",
+        style: Alert.ActionStyle.Destructive,
+      },
+    });
+
+    if (!confirmed) {
+      return;
+    }
+
+    setDeletingGistId(gist.id);
+
+    try {
+      await deleteGistFromCache(gist.id);
+      setCache((current) =>
+        current ? removeGistFromCachePayload(current, gist.id) : current,
+      );
+      await showToast({
+        style: Toast.Style.Success,
+        title: "Gist deleted",
+      });
+      await popToRoot();
+    } catch (deleteError) {
+      await showToast({
+        style: Toast.Style.Failure,
+        title: "Failed to delete gist",
+        message:
+          deleteError instanceof Error ? deleteError.message : "Unknown error",
+      });
+    } finally {
+      setDeletingGistId(null);
+    }
+  }
+
   if (error) {
     return (
       <List isLoading={false} searchBarPlaceholder="Search gists">
@@ -271,7 +326,6 @@ export default function SearchGists(_props: LaunchProps) {
           subtitle={formatGistSubtitle(gist)}
           accessories={[
             { tag: formatVisibility(gist.public) },
-            { text: pluralize(gist.files.length, "file") },
             { text: formatDate(gist.updatedAt) },
           ]}
           actions={
@@ -279,7 +333,7 @@ export default function SearchGists(_props: LaunchProps) {
               <Action.Push
                 title="Preview Gist"
                 icon={Icon.Eye}
-                target={<GistPreview gist={gist} />}
+                target={<GistPreview gist={gist} onDelete={handleDeleteGist} />}
               />
               <Action.OpenInBrowser
                 title="Show in GitHub"
@@ -290,6 +344,13 @@ export default function SearchGists(_props: LaunchProps) {
                 title="Copy Gist URL"
                 onAction={() => copyGistUrl(gist.htmlUrl)}
               />
+              <Action
+                title="Delete Gist"
+                icon={Icon.Trash}
+                style={Action.Style.Destructive}
+                onAction={() => handleDeleteGist(gist)}
+                shortcut={{ modifiers: ["ctrl"], key: "x" }}
+              />
             </ActionPanel>
           }
         />
@@ -297,3 +358,5 @@ export default function SearchGists(_props: LaunchProps) {
     </List>
   );
 }
+
+export default withGitHubOAuth(SearchGists);

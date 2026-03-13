@@ -1,6 +1,31 @@
 # GitHub Gist Explorer
 
-A Raycast extension for searching, previewing, creating, and pasting your GitHub gists.
+A Raycast extension for searching, previewing, creating, deleting, and pasting your GitHub gists.
+
+When you open a command for the first time, Raycast prompts you to sign in with GitHub in your browser. The extension uses GitHub OAuth with `gist` access and stores the token securely through Raycast.
+
+## Setup
+
+No manual personal access token setup is required.
+
+1. Open any command from the extension in Raycast.
+2. Sign in with GitHub when Raycast opens the browser-based OAuth flow.
+3. Approve access to your gists.
+4. Return to Raycast and start searching or creating gists.
+
+The extension requests GitHub access with the `gist` scope only.
+
+## Privacy and Local Data
+
+The extension stores a local cache on your machine so searches stay fast and available immediately when the command opens.
+
+The local cache includes:
+
+- normalized gist metadata
+- search documents built from filenames, descriptions, and indexed file content
+- sync metadata used to rebuild the search index
+
+This cached data is only used by the extension to power search, preview, and refresh behavior inside Raycast.
 
 ## What It Does
 
@@ -10,6 +35,7 @@ A Raycast extension for searching, previewing, creating, and pasting your GitHub
 - Opens an in-Raycast preview for each gist, with content on the left and gist metadata on the right
 - Lets you paste gist content directly into the active app from the preview
 - Supports creating new gists and manually rebuilding the local index
+- Supports deleting gists directly from Raycast
 
 ## Commands
 
@@ -28,12 +54,14 @@ Result actions:
 - `Enter`: open gist preview
 - `Ctrl+Enter`: show the gist on GitHub
 - `Copy Gist URL`: copy the GitHub URL
+- `Delete Gist`: permanently delete the gist from GitHub
 
 Preview actions:
 
 - `Enter`: paste gist content into the active text field and copy it to the clipboard
 - `Ctrl+Enter`: show the gist on GitHub
 - `Copy Gist URL`: copy the GitHub URL
+- `Delete Gist`: permanently delete the gist from GitHub
 
 For multi-file gists, the list title uses the first filename and shows `(+N more)` when additional files exist.
 
@@ -56,16 +84,9 @@ Rebuilds the local gist content index on demand.
 
 The extension defines these Raycast preferences:
 
-- `githubToken`: required GitHub Personal Access Token with `gist` scope
 - `fetchFullTruncatedContent`: when enabled, fetches raw content for truncated gist files during indexing
 
 ## How Search Works
-
-The extension stores a local cache containing:
-
-- normalized gist metadata
-- search documents
-- sync metadata
 
 Search is gist-level rather than file-level. Each gist is indexed using:
 
@@ -116,3 +137,4 @@ npm run build
 
 - The extension icon is provided from `assets/icon.png` and referenced in the manifest as `icon.png`
 - Search preview is intentionally content-focused, with filename and description shown in the metadata panel instead of repeated in the main preview body
+- Screenshots for the store listing live in the top-level `media/` folder

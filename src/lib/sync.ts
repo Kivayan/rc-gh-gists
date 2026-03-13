@@ -1,9 +1,7 @@
+import { getGitHubToken } from "./auth";
 import { fetchRawFileContent, getGist, listAllGists } from "./github";
 import { buildSearchDocuments } from "./search";
-import {
-  getRequiredToken,
-  shouldFetchFullTruncatedContent,
-} from "./preferences";
+import { shouldFetchFullTruncatedContent } from "./preferences";
 import { saveCache } from "./storage";
 import { CachePayload, GistRecord, SyncMetadata, SyncResult } from "./types";
 
@@ -62,7 +60,7 @@ export async function syncAllGists(): Promise<{
   result: SyncResult;
 }> {
   const startedAt = Date.now();
-  const token = getRequiredToken();
+  const token = getGitHubToken();
   const fetchFullTruncatedContent = shouldFetchFullTruncatedContent();
 
   const rawGists = await listAllGists(token);

@@ -7,6 +7,7 @@ import {
   showToast,
 } from "@raycast/api";
 import { useState } from "react";
+import { withGitHubOAuth } from "./lib/auth";
 import { appendCreatedGistToCache } from "./lib/cache-utils";
 
 type FormValues = {
@@ -16,7 +17,7 @@ type FormValues = {
   visibility: string;
 };
 
-export default function CreateGist() {
+function CreateGist() {
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleSubmit(values: FormValues) {
@@ -81,3 +82,5 @@ export default function CreateGist() {
     </Form>
   );
 }
+
+export default withGitHubOAuth(CreateGist);

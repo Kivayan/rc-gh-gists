@@ -8,8 +8,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
 type ExtensionPreferences = {
-  /** GitHub Personal Access Token - A GitHub PAT with gist scope */
-  "githubToken": string,
   /** Fetch Full Truncated File Content - When enabled, the indexer fetches full raw content for truncated gist files */
   "fetchFullTruncatedContent": boolean
 }

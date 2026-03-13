@@ -51,6 +51,37 @@ async function requestJson<T>(
   return (await response.json()) as T;
 }
 
+async function request(
+  url: string,
+  token: string,
+  init?: RequestInit,
+): Promise<Response> {
+  const response = await fetch(url, {
+    ...init,
+    headers: {
+      ...buildHeaders(token),
+      ...(init?.headers ?? {}),
+    },
+  });
+
+  if (response.status === 401 || response.status === 403) {
+    const remaining = response.headers.get("x-ratelimit-remaining");
+    if (remaining === "0") {
+      throw new RateLimitError();
+    }
+    throw new AuthenticationError();
+  }
+
+  if (!response.ok) {
+    throw new GitHubRequestError(
+      response.status,
+      `GitHub request failed with status ${response.status}`,
+    );
+  }
+
+  return response;
+}
+
 export async function fetchRawFileContent(rawUrl: string): Promise<string> {
   const response = await fetch(rawUrl);
   if (!response.ok) {
@@ -142,4 +173,10 @@ export async function createGist(
   );
 
   return normalizeGist(response);
+}
+
+export async function deleteGist(token: string, gistId: string): Promise<void> {
+  await request(`${GITHUB_API_BASE}/gists/${gistId}`, token, {
+    method: "DELETE",
+  });
 }

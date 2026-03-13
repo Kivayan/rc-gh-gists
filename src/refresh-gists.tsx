@@ -1,7 +1,8 @@
 import { closeMainWindow, showHUD, showToast, Toast } from "@raycast/api";
+import { withGitHubOAuth } from "./lib/auth";
 import { syncAllGists } from "./lib/sync";
 
-export default async function RefreshGists() {
+async function RefreshGists() {
   await closeMainWindow();
   const toast = await showToast({
     style: Toast.Style.Animated,
@@ -30,3 +31,5 @@ export default async function RefreshGists() {
     toast.message = error instanceof Error ? error.message : "Unknown error";
   }
 }
+
+export default withGitHubOAuth(RefreshGists);
